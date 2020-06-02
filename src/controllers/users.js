@@ -25,6 +25,7 @@ module.exports = {
           name,
           email,
           id_role,
+          password: bcrypt.hashSync(password, saltRounds),
           add_date: moment().format('YYYY-MM-DD hh:mm:ss')
         }
         const result = await userModel.createUser(userData)
@@ -32,7 +33,12 @@ module.exports = {
           const data = {
             success: true,
             msg: 'User data succesfully created!',
-            data: userData
+            data: {
+              name,
+              email,
+              id_role,
+              add_date: moment().format('YYYY-MM-DD hh:mm:ss')
+            }
           }
           response.status(201).send(data)
         } else {
@@ -115,7 +121,11 @@ module.exports = {
           const data = {
             success: true,
             msg: 'user has been updated',
-            data: userData[0]
+            data: {
+              name,
+              email,
+              up_date: moment().format('YYYY-MM-DD hh:mm:ss')
+            }
           }
           response.status(200).send(data)
         } else {
@@ -143,7 +153,7 @@ module.exports = {
       if (result) {
         const data = {
           success: true,
-          msg: `User ${fetchUser.name} deleted`
+          msg: `User with id ${id} deleted`
         }
         response.status(200).send(data)
       } else {

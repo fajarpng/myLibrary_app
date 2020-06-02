@@ -3,7 +3,7 @@ const db = require('../utils/DB')
 module.exports = {
   getAllBooks: (start, end, data = {}) => {
     const sql = `
-      SELECT books.title, books.image, books.description, genres.genre, book_status.status, authors.author 
+      SELECT books.id, books.title, books.image, books.description, genres.genre, book_status.status, authors.author 
       FROM books
       INNER JOIN genres ON books.id_genre = genres.id
       INNER JOIN book_status ON books.id_status = book_status.id
@@ -47,7 +47,7 @@ module.exports = {
     })
   },
   getBookByCondition: (data) => {
-    const sql = 'SELECT * FROM books WHERE ?'
+    const sql = `SELECT * FROM books WHERE ?`
     return new Promise((resolve, reject) => {
       db.query(sql, data, (error, result) => {
         if (error) {

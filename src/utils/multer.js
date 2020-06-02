@@ -4,7 +4,7 @@ const storage = multer.diskStorage({
     cb(null, './uploads')
   },
   filename: function (req, file, cb) {
-    cb(null, new Date().getTime().toString().concat('_').concat(file.originalname))
+    cb(null, 'IMG' + new Date().getTime().toString().concat('_').concat(file.originalname))
   }
 })
 
@@ -13,6 +13,10 @@ const fileFilter = (request, file, cb, error) => {
   if (checkImage === 'image/jpg' || checkImage === 'image/jpeg' || checkImage === 'image/png') {
     cb(null, true)
   } else {
+    const data = {
+      success : false,
+      msg : '.jpeg, .jpg or .png only'
+    }
     cb('.jpeg, .jpg or .png only', false)
   }
 }

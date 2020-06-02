@@ -1,6 +1,9 @@
+require('dotenv').config()
 const bookModel = require('../models/Books')
 const qs = require('querystring')
 const moment = require('moment')
+const upload = require('../utils/multer')
+const cover = upload.single('image');
 
 const getPage = (_page) => {
   const page = parseInt(_page)
@@ -77,16 +80,22 @@ module.exports = {
     response.status(200).send(data)
   },
   addBook: async (request, response) => {
+    cover (request, response, async function (error) {
+      if ( upload.MulterError || error) {
+        return response
+          .status(400)
+          .json({ success: false, message: 'only jpeg/jpg/png file, max 2mb'})
+      }
     const { title, description, id_genre, id_author } = request.body
     if (title && description && id_genre && id_author && title !== '' && description !== '' && id_genre !== '' && id_author !== '') {
-      const isExsist = await bookModel.getBookByCondition({ title })
+      const isExsist = await bookModel.getBookByCondition( { title })
       if (isExsist.length < 1) {
         const bookData = {
           title,
           description,
           id_genre,
           id_author,
-          image: request.file.filename,
+          image: `${process.env.LOCALHOST}${request.file.filename}`,
           id_status: 1,
           add_date: moment().format('YYYY-MM-DD hh:mm:ss')
         }
@@ -120,11 +129,12 @@ module.exports = {
       }
       response.status(400).send(data)
     }
+    })
   },
   updateBook: async (request, response) => {
     const { id } = request.params
-    const { title, description, id_genre, id_author } = request.body
-    const fetchBook = await bookModel.getBookByCondition({ id: parseInt(id) })
+    const { title, description, id_genre, id_author, id_status } = request.body
+    const fetchBook = await bookModel.getBookByCondition( { id: parseInt(id) } )
     if (fetchBook.length > 0) {
       if (title && description && id_genre && title !== '' && description !== '' && id_genre !== '') {
         const bookData = [
@@ -132,6 +142,7 @@ module.exports = {
             description,
             id_genre,
             id_author,
+            id_status,
             up_date: moment().format('YYYY-MM-DD hh:mm:ss')
           },
           { id: parseInt(id) }
@@ -169,7 +180,7 @@ module.exports = {
   deleteBook: async (request, response) => {
     const { id } = request.params
     const _id = { id: parseInt(id) }
-    const isExsist = await bookModel.getBookByCondition(_id)
+    const isExsist = await bookModel.getBookByCondition( _id)
     if (isExsist.length > 0) {
       const result = await bookModel.deleteBook(_id)
       if (result) {
