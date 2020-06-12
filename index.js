@@ -6,13 +6,10 @@ const cors = require('cors')
 
 const app = express()
 
-app.use(cors())
+app.use(cors('*'))
 app.use(bodyparser.urlencoded({extended:false}))
+app.use(bodyparser.json())
 app.use('/img', express.static('uploads'))
-
-app.get('/', function (req, res, next) {
-    res.json({msg: 'This is CORS-enabled for all origins!'})
-  })
 
 //import 
 const books = require('./src/routes/books')
