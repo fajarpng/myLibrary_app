@@ -1,5 +1,4 @@
 const userModel = require('../models/users')
-const qs = require('querystring')
 const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -51,20 +50,21 @@ module.exports = {
       } else {
         const data = {
           success: false,
-          msg: 'email has been registered'
+          msg: 'Email has been registered !'
         }
         response.status(400).send(data)
       }
     } else {
       const data = {
         success: false,
-        msg: 'all form must be filled'
+        msg: 'All form must be filled !'
       }
       response.status(400).send(data)
     }
   },
   loginUser: async (request, response) => {
     const { email, password } = request.body
+if(email !== '' && password !== ''){
     const isExsist = await userModel.getUserByCondition({ email })
     if (isExsist.length > 0) {
       const checkPassword = bcrypt.compareSync(password, isExsist[0].password, (err, res) => {
@@ -74,9 +74,12 @@ module.exports = {
         const data = {
           success: true,
           msg: `Hi! ${isExsist[0].name}, Login Sucsess`,
+          name: isExsist[0].name,
+          role: isExsist[0].id_role,
           token: jwt.sign(
             {
               name: isExsist[0].name,
+              role: isExsist[0].id_role,
               email
             },
             process.env.JWT_KEY,
@@ -89,14 +92,21 @@ module.exports = {
       } else {
         const data = {
           success: false,
-          msg: `password incorrect`
+          msg: 'Password or username incorrect !'
         }
         response.status(400).send(data)
       }
     } else {
       const data = {
         success: false,
-        msg: `email is not registered`
+        msg: `Email is not registered !`
+      }
+      response.status(400).send(data)
+    }
+} else {
+      const data = {
+        success: false,
+        msg: 'All form must be filled !'
       }
       response.status(400).send(data)
     }
@@ -119,7 +129,7 @@ module.exports = {
         if (result) {
           const data = {
             success: true,
-            msg: 'user has been updated',
+            msg: 'User has been updated',
             data: {
               name,
               email,

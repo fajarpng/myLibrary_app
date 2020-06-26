@@ -158,7 +158,6 @@ module.exports = {
               description,
               id_genre: fetchGenre[0].id,
               id_author: fetchAuthor[0].id,
-              id_status,
               up_date: moment().format('YYYY-MM-DD hh:mm:ss')
             },
             { id: parseInt(id) }

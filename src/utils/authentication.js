@@ -9,7 +9,7 @@ const verifyToken = (request, response, next) => {
     } else {
         const data = {
             success: false,
-            message: 'Access denied, no token'
+            msg: 'Access denied, You need to login first !'
         }
         response.status(401).send(data)
     }
@@ -20,7 +20,7 @@ const verifyToken = (request, response, next) => {
     } catch (error) {
         const data = {
             success: false,
-            message: 'Invalid Token'
+            msg: 'Invalid Token'
         }
         response.status(400).send(data)
     }
