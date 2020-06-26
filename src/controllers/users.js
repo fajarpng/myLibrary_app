@@ -78,6 +78,7 @@ if(email !== '' && password !== ''){
           role: isExsist[0].id_role,
           token: jwt.sign(
             {
+              id: isExsist[0].id,
               name: isExsist[0].name,
               role: isExsist[0].id_role,
               email
