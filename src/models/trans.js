@@ -2,7 +2,7 @@ const db = require('../utils/DB')
 
 module.exports = {
   getAllTrans: () => {
-    const sql = `SELECT transction.id, books.title, users.name 
+    const sql = `SELECT transction.id, books.title, books.image, books.description, users.name 
     FROM transction
     INNER JOIN books ON books.id = transction.id_book
     INNER JOIN users ON users.id = transction.id_user`

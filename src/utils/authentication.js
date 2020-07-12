@@ -20,7 +20,7 @@ const verifyToken = (request, response, next) => {
     } catch (error) {
         const data = {
             success: false,
-            msg: 'Invalid Token'
+            msg: 'Access denied, you need to re-Login'
         }
         response.status(400).send(data)
     }

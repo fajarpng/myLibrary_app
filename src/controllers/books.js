@@ -5,7 +5,7 @@ const genreModel = require('../models/genres')
 const qs = require('querystring')
 const moment = require('moment')
 const upload = require('../utils/multer')
-const cover = upload.single('image');
+const cover = upload.single('image')
 
 const getPage = (_page) => {
   const page = parseInt(_page)
@@ -51,17 +51,17 @@ const getPrevLinkQueryString = (page, currentQuery) => {
 
 module.exports = {
   getAllBooks: async (request, response) => {
-    const { page, limit, search, sort } = request.query
+    const { page, limit, search, sort, id_genre } = request.query
     const condition = {
       search,
-      sort
+      sort,
+      id_genre
     }
     const sliceStart = (getPage(page) * getPerPage(limit)) - getPerPage(limit)
     const sliceEnd = (getPage(page) * getPerPage(limit))
     const totalData = await bookModel.getBookCount(condition)
     const totalPage = Math.ceil(totalData / getPerPage(limit))
     
-
     const prevLink = getPrevLinkQueryString(getPage(page), request.query)
     const nextLink = getNextLinkQueryString(getPage(page), totalPage, request.query)
 
@@ -100,7 +100,7 @@ module.exports = {
             description,
             id_genre: fetchGenre[0].id,
             id_author: fetchAuthor[0].id,
-            image: `${process.env.LOCALHOST}${request.file.filename}`,
+            image: request.file.filename,
             id_status: 1,
             add_date: moment().format('YYYY-MM-DD hh:mm:ss')
           }

@@ -3,6 +3,8 @@ const moment = require('moment')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const saltRounds = 10
+const upload = require('../utils/multer')
+const profileImg = upload.single('image')
 
 module.exports = {
   getAllUsers: async (request, response) => {
@@ -64,7 +66,7 @@ module.exports = {
   },
   loginUser: async (request, response) => {
     const { email, password } = request.body
-if(email !== '' && password !== ''){
+    if(email !== '' && password !== ''){
     const isExsist = await userModel.getUserByCondition({ email })
     if (isExsist.length > 0) {
       const checkPassword = bcrypt.compareSync(password, isExsist[0].password, (err, res) => {
@@ -74,8 +76,11 @@ if(email !== '' && password !== ''){
         const data = {
           success: true,
           msg: `Hi! ${isExsist[0].name}, Login Sucsess`,
+          id: isExsist[0].id,
           name: isExsist[0].name,
+          image: isExsist[0].image,
           role: isExsist[0].id_role,
+          email,
           token: jwt.sign(
             {
               id: isExsist[0].id,
@@ -85,7 +90,7 @@ if(email !== '' && password !== ''){
             },
             process.env.JWT_KEY,
             {
-              expiresIn: '1h'
+              expiresIn: '12h'
             }
           )
         }
@@ -104,7 +109,7 @@ if(email !== '' && password !== ''){
       }
       response.status(400).send(data)
     }
-} else {
+  } else {
       const data = {
         success: false,
         msg: 'All form must be filled !'
@@ -112,9 +117,53 @@ if(email !== '' && password !== ''){
       response.status(400).send(data)
     }
   },
+  updateImgProfile: async (request,response) => {
+    const { id } = request.params
+    const fetchUser = await userModel.getUserByCondition({ id: parseInt(id) })
+    if (fetchUser.length > 0) {
+      profileImg (request, response, async function (error) {
+        if ( upload.MulterError || error) {
+          return response
+            .status(400)
+            .json({ success: false, msg: 'only jpeg/jpg/png file, max 2mb'})
+        } else {
+          const userData = [
+            { image: request.file.filename },
+            { id: parseInt(id) }
+          ]
+          const result = await userModel.updateUser(userData)
+          if (result) {
+            const data = {
+              success: true,
+                msg: 'Success !, Photo profile updated',
+                data: {
+                  name: fetchUser[0].name,
+                  email: fetchUser[0].email,
+                  image: request.file.filename,
+                  up_date: moment().format('YYYY-MM-DD hh:mm:ss')
+                }
+              }
+              response.status(200).send(data)
+            } else {
+              const data = {
+                success: false,
+                msg: 'failed to update'
+              }
+              response.status(400).send(data)
+            }
+        }
+      })
+    } else {
+      const data = {
+        success: false,
+        msg: `User with id ${id} not found!`
+      }
+      response.status(400).send(data)
+    }
+  },
   updateUser: async (request, response) => {
     const { id } = request.params
-    const { name, email, password } = request.body
+    const { name, email, password} = request.body
     const fetchUser = await userModel.getUserByCondition({ id: parseInt(id) })
     if (fetchUser.length > 0) {
       if (name && email && password && name !== '' && email !== '' && password !== '') {

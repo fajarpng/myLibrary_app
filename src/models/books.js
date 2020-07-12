@@ -8,7 +8,7 @@ module.exports = {
       INNER JOIN genres ON books.id_genre = genres.id
       INNER JOIN book_status ON books.id_status = book_status.id
       INNER JOIN authors ON books.id_author = authors.id
-      WHERE books.title LIKE '${data.search || ''}%' 
+      WHERE books.title LIKE '${data.search || ''}%'&& books.id_genre LIKE '${data.id_genre || ''}%'
       ORDER BY books.title ${parseInt(data.sort) ? 'DESC' : 'ASC'} 
       LIMIT ${end} OFFSET ${start}`
     return new Promise((resolve, reject) => {
