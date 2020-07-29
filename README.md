@@ -1,2 +1,2 @@
-<h1 align='center'>myLibrary_app</h1>
-myLibrary_app is a backend api
+<h1 align='center'>ExpressJS - Simple Library RESTfull API</h1>
+myLibrary is a simple library aplication specially for backend only, It's built with Node Js, uses using the ExpressJs Framework & Mysql.
